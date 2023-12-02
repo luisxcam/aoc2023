@@ -24,17 +24,27 @@ GAME_TO_TURN_SEPARATOR = ":"
 TURN_SEPARATOR = ";"
 
 
+class Pull:
+    def __init__(self, pull_string):
+        self.__pull_result = {}
+        self.__set_pull_result(pull_string)
+
+    def __set_pull_result(self, pull_string):
+        for s in pull_string:
+            split_tally = s.strip().split(" ")
+            self.__pull_result[split_tally[1]] = int(split_tally[0])
+
+
 class Turn:
     def __init__(self, turn_pulls):
-        self.__turn_results = []
+        self.__pull_results = []
         self.__fill_turn_results(turn_pulls)
 
     def __fill_turn_results(self, turn_pulls):
         pulls_array = self.__split_turns_string(turn_pulls)
         for p in pulls_array:
             splited_pulls = self.__split_pulls(p)
-            tally = self.__split_pull_tally(splited_pulls)
-            self.__turn_results.append(tally)
+            self.__pull_results.append(Pull(splited_pulls))
 
     def __split_turns_string(self, turns_string):
         return turns_string.strip().split(TURN_SEPARATOR)
@@ -42,19 +52,12 @@ class Turn:
     def __split_pulls(self, pulls_string):
         return pulls_string.strip().split(",")
 
-    def __split_pull_tally(self, split_pulls):
-        tally = {}
-        for s in split_pulls:
-            split_tally = s.strip().split(" ")
-            tally[split_tally[1]] = int(split_tally[0])
-        return tally
-
 
 class Game:
     def __init__(self, game_turn):
         game_array = self.__split_game_string(game_turn)
         self.__game_id = self.__set_game_id(game_array[0])
-        self.turn = Turn(game_array[1])
+        self.__turn = Turn(game_array[1])
 
     def __split_game_string(self, game_string):
         return game_string.strip().split(GAME_TO_TURN_SEPARATOR)
@@ -64,6 +67,9 @@ class Game:
 
     def get_game_id(self):
         return self.__game_id
+
+    def get_turn(self):
+        return self.__turn
 
 
 class GameCollection:
