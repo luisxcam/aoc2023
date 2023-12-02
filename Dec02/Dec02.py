@@ -71,7 +71,15 @@ class Turn:
                     tally[color_count] = tally[color_count] if tally[color_count] > pull_result[color_count] else pull_result[color_count]
         return tally
 
-    def is_cube_combination_possible_in_turn(self):
+    def get_product_of_minimun_set_of_cubes(self):
+        max_cube_color_count_in_turn = self.__get_max_cube_color_per_turn()
+        product = 1
+        for cube_color in max_cube_color_count_in_turn:
+            amount_in_color = max_cube_color_count_in_turn[cube_color]
+            product *= amount_in_color
+        return product
+
+    def is_cube_combination_possible_challenge01(self):
         max_cube_color_count_in_turn = self.__get_max_cube_color_per_turn()
 
         for cube_color in QUESTION_CUBES:
@@ -96,8 +104,11 @@ class Game:
     def get_game_id(self):
         return self.__game_id
 
-    def is_game_cube_combination_possible(self):
-        return self.__turn.is_cube_combination_possible_in_turn()
+    def is_game_cube_combination_possible_challenge01(self):
+        return self.__turn.is_cube_combination_possible_challenge01()
+
+    def get_game_product_of_minimun_set_of_cubes(self):
+        return self.__turn.get_product_of_minimun_set_of_cubes()
 
 
 class GameCollection:
@@ -109,11 +120,17 @@ class GameCollection:
     def append(self, game: Game):
         self.__collection.append(game)
 
-    def get_id_sum_for_possible_games(self):
+    def challenge01(self):
         result = 0
         for g in self.__collection:
-            if (g.is_game_cube_combination_possible()):
+            if (g.is_game_cube_combination_possible_challenge01()):
                 result += g.get_game_id()
+        return result
+
+    def challenge02(self):
+        result = 0
+        for g in self.__collection:
+            result += g.get_game_product_of_minimun_set_of_cubes()
         return result
 
 
@@ -125,9 +142,14 @@ def read_file(txtFile):
 
 
 # challenge01: result: 8
+# challenge02: result: 2286
 # game02_text_input = read_file("Dec02/Dec02_Sample.txt")
+
 # challenge01: result: 2149
+# challenge02: result: 71274
 game02_text_input = read_file("Dec02/Dec02.txt")
 
 games = GameCollection(game02_text_input)
-print(f"result:{games.get_id_sum_for_possible_games()}")
+# print(f"result:{games.challenge01()}")
+
+print(f"result:{games.challenge02()}")
