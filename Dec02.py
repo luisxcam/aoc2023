@@ -26,24 +26,52 @@ TURN_SEPARATOR = ";"
 
 class Turn:
     def __init__(self, turn_pulls):
+        self.__turn_results = []
+        self.__fill_turn_results(turn_pulls)
+
+    def __fill_turn_results(self, turn_pulls):
         pulls_array = self.__split_turns_string(turn_pulls)
-        print("h")
+        for p in pulls_array:
+            splited_pulls = self.__split_pulls(p)
+            tally = self.__split_pull_tally(splited_pulls)
+            self.__turn_results.append(tally)
 
     def __split_turns_string(self, turns_string):
-        return (cleanse_string(turns_string)).split(TURN_SEPARATOR)
+        return turns_string.strip().split(TURN_SEPARATOR)
+
+    def __split_pulls(self, pulls_string):
+        return pulls_string.strip().split(",")
+
+    def __split_pull_tally(self, split_pulls):
+        tally = {}
+        for s in split_pulls:
+            split_tally = s.strip().split(" ")
+            tally[split_tally[1]] = int(split_tally[0])
+        return tally
 
 
 class Game:
     def __init__(self, game_turn):
         game_array = self.__split_game_string(game_turn)
-        self.game_id = self.__get_game_id(game_array[0])
+        self.__game_id = self.__set_game_id(game_array[0])
         self.turn = Turn(game_array[1])
 
     def __split_game_string(self, game_string):
-        return (cleanse_string(game_string)).split(GAME_TO_TURN_SEPARATOR)
+        return game_string.strip().split(GAME_TO_TURN_SEPARATOR)
 
-    def __get_game_id(self, value):
+    def __set_game_id(self, value):
         return int(value.replace(GAME_LABEL, ""))
+
+    def get_game_id(self):
+        return self.__game_id
+
+
+class GameCollection:
+    def __init__(self):
+        self.__collection = []
+
+    def append(self, game: Game):
+        self.__collection.append(game)
 
 
 def read_file(txtFile):
@@ -56,12 +84,8 @@ def read_file(txtFile):
 game02_text_input = read_file("Dec02.txt")
 
 
-def cleanse_string(txt):
-    return txt.strip()
-
-
 def create_game_data(game02_text_input):
-    games = []
+    games = GameCollection()
     for s in game02_text_input:
         games.append(Game(s))
 
