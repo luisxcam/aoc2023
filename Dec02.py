@@ -19,15 +19,31 @@
 
 # Determine which games would have been possible if the bag had been loaded with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?
 
+GAME_LABEL = "Game "
+GAME_TO_TURN_SEPARATOR = ":"
+TURN_SEPARATOR = ";"
+
+
 class Turn:
-    def __init__(self, cubes):
-        print("turn created")
+    def __init__(self, turn_pulls):
+        pulls_array = self.__split_turns_string(turn_pulls)
+        print("h")
+
+    def __split_turns_string(self, turns_string):
+        return (cleanse_string(turns_string)).split(TURN_SEPARATOR)
 
 
 class Game:
     def __init__(self, game_turn):
-        self.turn = Turn(None)
-        print("game created")
+        game_array = self.__split_game_string(game_turn)
+        self.game_id = self.__get_game_id(game_array[0])
+        self.turn = Turn(game_array[1])
+
+    def __split_game_string(self, game_string):
+        return (cleanse_string(game_string)).split(GAME_TO_TURN_SEPARATOR)
+
+    def __get_game_id(self, value):
+        return int(value.replace(GAME_LABEL, ""))
 
 
 def read_file(txtFile):
@@ -39,4 +55,15 @@ def read_file(txtFile):
 
 game02_text_input = read_file("Dec02.txt")
 
-a = Game(None)
+
+def cleanse_string(txt):
+    return txt.strip()
+
+
+def create_game_data(game02_text_input):
+    games = []
+    for s in game02_text_input:
+        games.append(Game(s))
+
+
+games = create_game_data(game02_text_input)
