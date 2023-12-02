@@ -39,8 +39,8 @@ class Pull:
             split_tally = s.strip().split(" ")
             self.__pull_result[split_tally[1]] = int(split_tally[0])
 
-    def get_amount_of_cubes_per_color(self, color):
-        return self.__pull_result[color] if self.__pull_result[color] is not None else 0
+    def get_pull_results(self):
+        return self.__pull_result
 
 
 class Turn:
@@ -60,9 +60,25 @@ class Turn:
     def __split_pulls(self, pulls_string):
         return pulls_string.strip().split(",")
 
+    def __get_max_cube_color_per_turn(self):
+        tally = {}
+        for pull in self.__pull_results:
+            pull_result = pull.get_pull_results()
+            for color_count in pull_result:
+                if (color_count not in tally):
+                    tally[color_count] = pull_result[color_count]
+                else:
+                    tally[color_count] = tally[color_count] if tally[color_count] > pull_result[color_count] else pull_result[color_count]
+        return tally
+
     def is_cube_combination_possible_in_turn(self):
+        max_cube_color_count_in_turn = self.__get_max_cube_color_per_turn()
+
         for cube_color in QUESTION_CUBES:
-            print(cube_color, QUESTION_CUBES[cube_color])
+            if (cube_color in max_cube_color_count_in_turn):
+                if (QUESTION_CUBES[cube_color] < max_cube_color_count_in_turn[cube_color]):
+                    return False
+        return True
 
 
 class Game:
@@ -85,8 +101,10 @@ class Game:
 
 
 class GameCollection:
-    def __init__(self):
+    def __init__(self, text_input):
         self.__collection = []
+        for s in text_input:
+            self.__collection.append(Game(s))
 
     def append(self, game: Game):
         self.__collection.append(game)
@@ -106,16 +124,7 @@ def read_file(txtFile):
     return data
 
 
-# game02_text_input = read_file("Dec02.txt")
-game02_text_input = read_file("Dec02_Sample.txt")
-
-
-def create_game_data(game02_text_input):
-    game_collection = GameCollection()
-    for s in game02_text_input:
-        game_collection.append(Game(s))
-    return game_collection
-
-
-games = create_game_data(game02_text_input)
-games.get_id_sum_for_possible_games()
+game02_text_input = read_file("Dec02.txt")
+# game02_text_input = read_file("Dec02_Sample.txt")
+games = GameCollection(game02_text_input)
+print(f"result:{games.get_id_sum_for_possible_games()}")
