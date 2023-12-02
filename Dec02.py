@@ -22,6 +22,11 @@
 GAME_LABEL = "Game "
 GAME_TO_TURN_SEPARATOR = ":"
 TURN_SEPARATOR = ";"
+QUESTION_CUBES = {
+    "red": 12,
+    "green": 13,
+    "blue": 14
+}
 
 
 class Pull:
@@ -33,6 +38,9 @@ class Pull:
         for s in pull_string:
             split_tally = s.strip().split(" ")
             self.__pull_result[split_tally[1]] = int(split_tally[0])
+
+    def get_amount_of_cubes_per_color(self, color):
+        return self.__pull_result[color] if self.__pull_result[color] is not None else 0
 
 
 class Turn:
@@ -52,6 +60,10 @@ class Turn:
     def __split_pulls(self, pulls_string):
         return pulls_string.strip().split(",")
 
+    def is_cube_combination_possible_in_turn(self):
+        for cube_color in QUESTION_CUBES:
+            print(cube_color, QUESTION_CUBES[cube_color])
+
 
 class Game:
     def __init__(self, game_turn):
@@ -68,8 +80,8 @@ class Game:
     def get_game_id(self):
         return self.__game_id
 
-    def get_turn(self):
-        return self.__turn
+    def is_game_cube_combination_possible(self):
+        return self.__turn.is_cube_combination_possible_in_turn()
 
 
 class GameCollection:
@@ -79,6 +91,13 @@ class GameCollection:
     def append(self, game: Game):
         self.__collection.append(game)
 
+    def get_id_sum_for_possible_games(self):
+        result = 0
+        for g in self.__collection:
+            if (g.is_game_cube_combination_possible()):
+                result += g.get_game_id()
+        return result
+
 
 def read_file(txtFile):
     file = open(txtFile)
@@ -87,13 +106,16 @@ def read_file(txtFile):
     return data
 
 
-game02_text_input = read_file("Dec02.txt")
+# game02_text_input = read_file("Dec02.txt")
+game02_text_input = read_file("Dec02_Sample.txt")
 
 
 def create_game_data(game02_text_input):
-    games = GameCollection()
+    game_collection = GameCollection()
     for s in game02_text_input:
-        games.append(Game(s))
+        game_collection.append(Game(s))
+    return game_collection
 
 
 games = create_game_data(game02_text_input)
+games.get_id_sum_for_possible_games()
