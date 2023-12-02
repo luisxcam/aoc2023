@@ -125,9 +125,9 @@ def read_file(txtFile):
 
 
 # challenge01: result: 8
-# game02_text_input = read_file("Dec02_Sample.txt")
+# game02_text_input = read_file("Dec02/Dec02_Sample.txt")
 # challenge01: result: 2149
-game02_text_input = read_file("Dec02.txt")
+game02_text_input = read_file("Dec02/Dec02.txt")
 
 games = GameCollection(game02_text_input)
-# print(f"result:{games.get_id_sum_for_possible_games()}")
+print(f"result:{games.get_id_sum_for_possible_games()}")

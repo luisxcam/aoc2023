@@ -15,7 +15,7 @@ def read_file(txtFile):
     return data
 
 
-challenge_string = read_file("Dec01.txt")
+challenge_string = read_file("Dec01/Dec01.txt")
 
 
 def cleanse_string(txt):
