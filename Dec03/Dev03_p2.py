@@ -24,28 +24,38 @@ def get_char_context(char):
         return CharContextEnum.INVALID
 
 
-def scan_vertical_row(row, start_index, end_index):
-    amount = 0
+def fetch_value_from_coord(row, found_index, max_index_value):
+    number = row[found_index]
+    for rindex in range(found_index, 0, -1):
+        value = row[rindex-1]
+        if get_char_context(value) == CharContextEnum.NUMERIC:
+            number = value + number
+        else:
+            break
+    for index in range(found_index + 1, max_index_value):
+        value = row[index]
+        if get_char_context(value) == CharContextEnum.NUMERIC:
+            number += value
+        else:
+            break
+    return number
+
+
+def get_int_from_row(row, start_index, end_index, max_index_value):
+    numbers = []
     locked = False
     for i in range(start_index, end_index + 1):
         char_context = get_char_context(row[i])
         if (locked == False and char_context == CharContextEnum.NUMERIC):
-            amount += 1
+            value = fetch_value_from_coord(row, i, max_index_value)
+            if (value is not None):
+                numbers.append[value]
         locked = char_context == CharContextEnum.NUMERIC
-    return amount
+    return numbers
 
 
-def scan_around_symbol(prev_row, row, next_row, start_index, end_index):
-    total = 0
-    heat_map = {"above": 0, "bellow": 0, "next_to": 0}
-    if (prev_row is not None):
-        heat_map["above"] = scan_vertical_row(prev_row, start_index, end_index)
-        total += heat_map["above"]
-
-    if (next_row is not None):
-        heat_map["bellow"] = scan_vertical_row(
-            next_row, start_index, end_index)
-        total += heat_map["bellow"]
+def scan_around_symbol(prev_row, row, next_row, start_index, end_index, max_index_value):
+    get_int_from_row(prev_row, start_index, end_index, max_index_value)
 
 
 def get_product_of_adjacent(prev_row, row, next_row, coord, row_length):
@@ -53,7 +63,8 @@ def get_product_of_adjacent(prev_row, row, next_row, coord, row_length):
     start_index = coord - 1 if coord > 0 else 0
     end_index = coord + \
         1 if coord < max_index_value else max_index_value
-    scan_around_symbol(prev_row, row, next_row, start_index, end_index)
+    scan_around_symbol(prev_row, row, next_row, start_index,
+                       end_index, max_index_value)
 
 
 def get_values_from_row(prev_row, row, next_row):
