@@ -18,14 +18,6 @@ def read_file(txtFile):
 challenge_string = read_file("Dec01/Dec01.txt")
 
 
-def cleanse_string(txt):
-    return txt.strip()
-
-
-def reverse_string(txt):
-    return txt[::-1]
-
-
 def get_first_number_from_string(str):
     for s in range(len(str)):
         if str[s].isnumeric():
@@ -34,9 +26,9 @@ def get_first_number_from_string(str):
 
 
 def get_first_and_last_numeric(input_string):
-    clean_string = cleanse_string(input_string)
+    clean_string = input_string.strip()
     first = get_first_number_from_string(clean_string)
-    inverted_string = reverse_string(clean_string)
+    inverted_string = clean_string[::-1]
     last = get_first_number_from_string(inverted_string)
     if (last is None):
         last = first
