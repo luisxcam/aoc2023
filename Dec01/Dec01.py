@@ -1,13 +1,3 @@
-import time
-
-
-def measure_performance(f):
-    start_time = time.perf_counter()
-    f()
-    end_time = time.perf_counter()
-    print(f"ellapsed: {end_time - start_time}")
-
-
 def read_file(txtFile):
     file = open(txtFile)
     data = file.readlines()
@@ -15,13 +5,10 @@ def read_file(txtFile):
     return data
 
 
-challenge_string = read_file("Dec01/Dec01.txt")
-
-
-def get_first_number_from_string(str):
-    for s in range(len(str)):
-        if str[s].isnumeric():
-            return str[s]
+def get_first_number_from_string(input):
+    for s in range(len(input)):
+        if input[s].isnumeric():
+            return input[s]
     return None
 
 
@@ -30,9 +17,7 @@ def get_first_and_last_numeric(input_string):
     first = get_first_number_from_string(clean_string)
     inverted_string = clean_string[::-1]
     last = get_first_number_from_string(inverted_string)
-    if (last is None):
-        last = first
-    return int(str(first) + str(last))
+    return int(first + last)
 
 
 def sum_values_in_range(arr):
@@ -42,16 +27,8 @@ def sum_values_in_range(arr):
     return acc
 
 
-def challenge_wrapper():
-    sum_values_in_range(challenge_string)
-
-
-measure_performance(challenge_wrapper)
-
-result_challenge_01 = sum_values_in_range(challenge_string)
-assert result_challenge_01 == 55834, f"Result from challenge 01 should be 55834 but it was {
-    result_challenge_01}"
-print(f"First Challenge Result: {result_challenge_01}")
+challenge_string = read_file("Dec01/Dec01.txt")
+print(sum_values_in_range(challenge_string))  # 55834
 
 
 # def get_number_strings():
