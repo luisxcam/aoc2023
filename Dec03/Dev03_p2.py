@@ -1,6 +1,5 @@
 from enum import Enum
 GEAR_CHAR = "*"
-wfile = open("log.txt", "a")
 
 
 class CharContextEnum(Enum):
@@ -33,7 +32,7 @@ def fetch_value_from_coord(row, found_index, max_index_value):
             num = value + num
         else:
             break
-    for index in range(found_index + 1, max_index_value):
+    for index in range(found_index + 1, max_index_value + 1):
         value = row[index]
         if get_char_context(value) == CharContextEnum.NUMERIC:
             num += value
@@ -84,7 +83,6 @@ def get_product_of_adjacent(prev_row, curr_row, next_row, coord, row_length):
     assert len(values) == 2, f"SOMETHING WENT WRONG! Got Length of {len(values)} for {
         values} from prev:{prev_row}, row:{curr_row}, or next{next_row}"
 
-    wfile.write(f"Product for : {values[0]} and {values[1]}\n")
     return int(values[0]) * int(values[1])
 
 
@@ -98,18 +96,10 @@ def get_values_from_row(prev_row, row, next_row):
         if (char_context != CharContextEnum.GEAR):
             continue
 
-        wfile.write(f"----\n\n")
-        wfile.write(f"Found * index:{char_index}\n")
-        wfile.write(f"{prev_row}\n")
-        wfile.write(f"{row}\n")
-        wfile.write(f"{next_row}\n")
-
         product = get_product_of_adjacent(
             prev_row, row, next_row, char_index, row_length)
         result += product
 
-        wfile.write(f"Product:{product}\n")
-        wfile.write(f"Result from row: {result}\n")
     return result
 
 
@@ -122,35 +112,10 @@ def get_product_of_gear(text_arr):
         if (index < len(text_arr) - 1):
             next_row = text_arr[index+1].strip()
         result += get_values_from_row(prev_row, row, next_row)
-        wfile.write(f"ROW-INDEX: {index}\n")
-        wfile.write(f"Total Result: {result}\n")
-        wfile.write(
-            f"########~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        wfile.write("\n\n\n")
         prev_row = row
     return result
 
 
-challenge_string = read_file("Dec03/Dec03.txt")  # 467835
-sample_string = read_file("Dec03/Dec03_Sample.txt")  # ?
+challenge_string = read_file("Dec03/Dec03.txt")  # 84159075
+sample_string = read_file("Dec03/Dec03_Sample.txt")  # 467835
 print(get_product_of_gear(challenge_string))
-wfile.close()
-
-# def is_symbol_in_range(row, start_index, end_index):
-#     if (row is None):
-#         return False
-
-#     for i in range(start_index, end_index + 1):
-#         char_context = get_char_context(row[i])
-#         if (char_context == CharContextEnum.GEAR):
-#             return True
-#     return False
-
-
-# def get_is_valid_from_adjacent_row(prev_row, next_row, row_length, coordinates):
-#     max_index_value = row_length - 1
-#     start_index = coordinates[0] - 1 if coordinates[0] > 0 else 0
-#     end_index = coordinates[-1] + \
-#         1 if coordinates[-1] < max_index_value else max_index_value
-
-#     return is_symbol_in_range(prev_row, start_index, end_index) or is_symbol_in_range(next_row, start_index, end_index)
