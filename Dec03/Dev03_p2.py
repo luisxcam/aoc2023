@@ -1,5 +1,6 @@
 from enum import Enum
 GEAR_CHAR = "*"
+wfile = open("log.txt", "a")
 
 
 class CharContextEnum(Enum):
@@ -25,46 +26,66 @@ def get_char_context(char):
 
 
 def fetch_value_from_coord(row, found_index, max_index_value):
-    number = row[found_index]
+    num = row[found_index]
     for rindex in range(found_index, 0, -1):
         value = row[rindex-1]
         if get_char_context(value) == CharContextEnum.NUMERIC:
-            number = value + number
+            num = value + num
         else:
             break
     for index in range(found_index + 1, max_index_value):
         value = row[index]
         if get_char_context(value) == CharContextEnum.NUMERIC:
-            number += value
+            num += value
         else:
             break
-    return number
+    return num
 
 
 def get_int_from_row(row, start_index, end_index, max_index_value):
-    numbers = []
+    if (row is None):
+        return []
+
+    num = []
     locked = False
     for i in range(start_index, end_index + 1):
         char_context = get_char_context(row[i])
         if (locked == False and char_context == CharContextEnum.NUMERIC):
             value = fetch_value_from_coord(row, i, max_index_value)
             if (value is not None):
-                numbers.append[value]
+                num.append(value)
         locked = char_context == CharContextEnum.NUMERIC
-    return numbers
+    return num
 
 
-def scan_around_symbol(prev_row, row, next_row, start_index, end_index, max_index_value):
-    get_int_from_row(prev_row, start_index, end_index, max_index_value)
+def get_values_around_symbol(prev_row, row, next_row, start_index, end_index, max_index_value):
+
+    numbers_from_prev_row = get_int_from_row(
+        prev_row, start_index, end_index, max_index_value)
+    numbers_from_in_row = get_int_from_row(row, start_index,
+                                           end_index, max_index_value)
+    numbers_from_next_row = get_int_from_row(next_row, start_index,
+                                             end_index, max_index_value)
+    return numbers_from_prev_row + numbers_from_in_row + numbers_from_next_row
 
 
-def get_product_of_adjacent(prev_row, row, next_row, coord, row_length):
+def get_product_of_adjacent(prev_row, curr_row, next_row, coord, row_length):
     max_index_value = row_length - 1
     start_index = coord - 1 if coord > 0 else 0
     end_index = coord + \
         1 if coord < max_index_value else max_index_value
-    scan_around_symbol(prev_row, row, next_row, start_index,
-                       end_index, max_index_value)
+
+    values = get_values_around_symbol(prev_row, curr_row, next_row, start_index,
+                                      end_index, max_index_value)
+
+    if (len(values) < 2):
+        return 0
+
+    assert len(values) == 2, f"SOMETHING WENT WRONG! Got Length of {len(values)} for {
+        values} from prev:{prev_row}, row:{curr_row}, or next{next_row}"
+
+    wfile.write(f"Product for : {values[0]} and {values[1]}\n")
+    return int(values[0]) * int(values[1])
 
 
 def get_values_from_row(prev_row, row, next_row):
@@ -77,8 +98,18 @@ def get_values_from_row(prev_row, row, next_row):
         if (char_context != CharContextEnum.GEAR):
             continue
 
-        result += get_product_of_adjacent(prev_row,
-                                          row, next_row, char_index, row_length)
+        wfile.write(f"----\n\n")
+        wfile.write(f"Found * index:{char_index}\n")
+        wfile.write(f"{prev_row}\n")
+        wfile.write(f"{row}\n")
+        wfile.write(f"{next_row}\n")
+
+        product = get_product_of_adjacent(
+            prev_row, row, next_row, char_index, row_length)
+        result += product
+
+        wfile.write(f"Product:{product}\n")
+        wfile.write(f"Result from row: {result}\n")
     return result
 
 
@@ -91,14 +122,19 @@ def get_product_of_gear(text_arr):
         if (index < len(text_arr) - 1):
             next_row = text_arr[index+1].strip()
         result += get_values_from_row(prev_row, row, next_row)
+        wfile.write(f"ROW-INDEX: {index}\n")
+        wfile.write(f"Total Result: {result}\n")
+        wfile.write(
+            f"########~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        wfile.write("\n\n\n")
         prev_row = row
     return result
 
 
 challenge_string = read_file("Dec03/Dec03.txt")  # 467835
 sample_string = read_file("Dec03/Dec03_Sample.txt")  # ?
-print(get_product_of_gear(sample_string))
-
+print(get_product_of_gear(challenge_string))
+wfile.close()
 
 # def is_symbol_in_range(row, start_index, end_index):
 #     if (row is None):
